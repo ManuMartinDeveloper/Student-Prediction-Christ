@@ -3,7 +3,7 @@ import os
 import pandas as pd
 from src.data_loader import load_data
 from src.preprocessing import Preprocessor
-from src.models import ModelTrainer
+from src.models import ModelTrainer, ModelFactory
 from src.evaluation import Evaluator
 
 def main():
@@ -37,32 +37,51 @@ def main():
     best_f1 = -1
     best_model_name = ""
     
-    print("\nTraining models...")
+    from sklearn.model_selection import cross_val_score, StratifiedKFold
+    
+    print("\nTraining models (using 5-Fold Cross-Validation)...")
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    
     for model_name in models_to_train:
+        # Cross Validation for robust metrics
+        model = ModelFactory.get_model(model_name)
+        cv_scores = cross_val_score(model, X_scaled, y, cv=cv, scoring='f1')
+        mean_cv_f1 = cv_scores.mean()
+        
+        # Train on split for standard reporting (optional, can just use CV)
         trainer.train_model(model_name, X_train, y_train)
         y_pred = trainer.predict(model_name, X_test)
         metrics = evaluator.evaluate(y_test, y_pred)
+        
+        # We can store CV score as the primary metric for comparison to avoid overfitting on a single split
+        metrics['CV-Mean-F1'] = mean_cv_f1
         results[model_name] = metrics
         
-        print(f"  {model_name}: {metrics}")
+        print(f"  {model_name}: Test F1={metrics['F1-Score']:.4f}, CV F1={mean_cv_f1:.4f}")
         
         if metrics['F1-Score'] > best_f1:
             best_f1 = metrics['F1-Score']
             best_model_name = model_name
 
     print(f"\nBest Model: {best_model_name} (F1: {best_f1:.4f})")
+    
+    # Save Best Model
+    MODEL_SAVE_PATH = os.path.join(os.getcwd(), 'models', f'{best_model_name}.pkl')
+    os.makedirs(os.path.join(os.getcwd(), 'models'), exist_ok=True)
+    trainer.save_model(best_model_name, MODEL_SAVE_PATH)
 
     # 4. Generate Report
     print("Generating report...")
     with open(REPORT_PATH, 'w') as f:
         f.write("# Model Comparison Report\n\n")
-        f.write("| Model | Accuracy | Precision | Recall | F1-Score |\n")
-        f.write("|-------|----------|-----------|--------|----------|\n")
+        f.write("| Model | Accuracy | Precision | Recall | Test F1 | CV F1 (Mean) |\n")
+        f.write("|-------|----------|-----------|--------|---------|--------------|\n")
         for model_name, metrics in results.items():
-            f.write(f"| {model_name} | {metrics['Accuracy']:.4f} | {metrics['Precision']:.4f} | {metrics['Recall']:.4f} | {metrics['F1-Score']:.4f} |\n")
+            f.write(f"| {model_name} | {metrics['Accuracy']:.4f} | {metrics['Precision']:.4f} | {metrics['Recall']:.4f} | {metrics['F1-Score']:.4f} | {metrics['CV-Mean-F1']:.4f} |\n")
         
         f.write(f"\n## Best Model Selection\n")
-        f.write(f"The best performing model is **{best_model_name}** with an F1-Score of **{best_f1:.4f}**.\n")
+        f.write(f"The best performing model is **{best_model_name}**.\n")
+        f.write(f"The model has been saved to `{MODEL_SAVE_PATH}`.\n")
         
         # Feature Importance for Best Model
         best_model = trainer.models[best_model_name]
