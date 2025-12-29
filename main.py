@@ -23,7 +23,7 @@ def main():
     # 2. Preprocessing
     print("Preprocessing data...")
     preprocessor = Preprocessor()
-    X_scaled, y, full_processed_df, feature_names = preprocessor.preprocess(df)
+    X_scaled, y, full_processed_df, feature_names = preprocessor.fit_transform(df)
     
     # Split
     X_train, X_test, y_train, y_test = preprocessor.split_data(X_scaled, y)
@@ -66,9 +66,17 @@ def main():
     print(f"\nBest Model: {best_model_name} (F1: {best_f1:.4f})")
     
     # Save Best Model
-    MODEL_SAVE_PATH = os.path.join(os.getcwd(), 'models', f'{best_model_name}.pkl')
-    os.makedirs(os.path.join(os.getcwd(), 'models'), exist_ok=True)
+    MODEL_DIR = os.path.join(os.getcwd(), 'models')
+    os.makedirs(MODEL_DIR, exist_ok=True)
+    
+    MODEL_SAVE_PATH = os.path.join(MODEL_DIR, f'{best_model_name}.pkl')
     trainer.save_model(best_model_name, MODEL_SAVE_PATH)
+    
+    # Save Preprocessor
+    import joblib
+    PREPROCESSOR_SAVE_PATH = os.path.join(MODEL_DIR, 'preprocessor.pkl')
+    joblib.dump(preprocessor, PREPROCESSOR_SAVE_PATH)
+    print(f"Saved Preprocessor to {PREPROCESSOR_SAVE_PATH}")
 
     # 4. Generate Report
     print("Generating report...")

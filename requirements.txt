@@ -4,3 +4,7 @@ scikit-learn
 tabulate
 joblib
 notebook
+fastapi
+uvicorn
+streamlit
+python-multipart
