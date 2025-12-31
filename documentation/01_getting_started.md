@@ -65,7 +65,7 @@ python main.py
 ```
 
 **What this does:**
-1. Loads `student_performance_risk_dataset.csv`
+1. Loads `Dataset/student_performance_risk_dataset.csv`
 2. Preprocesses the data (scaling, imputation)
 3. Trains 4 different ML models
 4. Evaluates each with cross-validation

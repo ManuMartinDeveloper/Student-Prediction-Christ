@@ -8,9 +8,9 @@ from src.evaluation import Evaluator
 
 def main():
     # Paths
-    DATA_PATH = os.path.join(os.getcwd(), 'student_performance_risk_dataset.csv')
+    DATA_PATH = os.path.join(os.getcwd(), 'Dataset', 'student_performance_risk_dataset.csv')
     REPORT_PATH = os.path.join(os.getcwd(), 'reports', 'model_comparison.md')
-    PREDICTIONS_PATH = os.path.join(os.getcwd(), 'student_risk_predictions.csv')
+    PREDICTIONS_PATH = os.path.join(os.getcwd(), 'Dataset', 'student_risk_predictions.csv')
     
     # 1. Load Data
     print("Loading data...")

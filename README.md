@@ -70,6 +70,26 @@ The API will be available at `http://127.0.0.1:8000`
 streamlit run src/frontend.py
 ```
 
+### Generating Synthetic Test Data
+
+To generate synthetic student data for testing:
+
+```bash
+# Generate 500 samples with default settings
+python generate_synthetic_data.py --num_samples 500
+
+# Generate 1000 samples with balanced classes (50% at-risk)
+python generate_synthetic_data.py --num_samples 1000 --balance 0.5
+
+# Custom output path and seed for reproducibility
+python generate_synthetic_data.py --num_samples 2000 --output Dataset/test_data.csv --seed 123
+```
+
+The generator creates realistic data with:
+- Correlated features (attendance, assignments, internal marks, GPA)
+- Configurable class balance
+- Statistical patterns matching the original dataset
+
 The web interface will open automatically in your browser (usually http://localhost:8501)
 
 ## 📊 Model Performance
@@ -112,9 +132,11 @@ d:/Projects/Student Prediction/
 │   └── student_risk_analysis.ipynb  # Step-by-step analysis
 ├── main.py                    # Training pipeline
 ├── test_api.py                # API testing script
+├── generate_synthetic_data.py # Synthetic data generator
 ├── requirements.txt           # Python dependencies
-├── student_performance_risk_dataset.csv  # Dataset
-└── student_risk_predictions.csv  # Generated predictions
+└── Dataset/                   # Dataset folder
+    ├── student_performance_risk_dataset.csv  # Original dataset
+    └── student_risk_predictions.csv          # Generated predictions
 ```
 
 ## 🔧 Tech Stack

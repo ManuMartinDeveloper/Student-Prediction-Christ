@@ -46,8 +46,8 @@ def load_data(filepath: str) -> pd.DataFrame:
 ```python
 from src.data_loader import load_data
 
-df = load_data('student_performance_risk_dataset.csv')
-# Output: Successfully loaded data from student_performance_risk_dataset.csv. Shape: (120, 6)
+df = load_data('Dataset/student_performance_risk_dataset.csv')
+# Output: Successfully loaded data from Dataset/student_performance_risk_dataset.csv. Shape: (120, 6)
 ```
 
 ---
@@ -256,7 +256,7 @@ def get_feature_importance(model, feature_names):
 
 #### 1. Load Data
 ```python
-DATA_PATH = os.path.join(os.getcwd(), 'student_performance_risk_dataset.csv')
+DATA_PATH = os.path.join(os.getcwd(), 'Dataset', 'student_performance_risk_dataset.csv')
 df = load_data(DATA_PATH)
 ```
 
